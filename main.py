@@ -32,7 +32,8 @@ from src.proxy import ProxyDetector
 from src.utils import logger
 from src import utils
 from msg_push import (
-    dingtalk, xizhi, tg_bot, send_email, bark, ntfy, pushplus
+    dingtalk, xizhi, tg_bot, send_email, bark, ntfy,
+    pushplus, wecom_group_bot
 )
 from ffmpeg_install import (
     check_ffmpeg, ffmpeg_path, current_env_path
