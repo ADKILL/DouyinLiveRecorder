@@ -22,6 +22,53 @@ opener = urllib.request.build_opener(no_proxy_handler)
 headers: Dict[str, str] = {'Content-Type': 'application/json'}
 
 
+def wecom_group_bot(url: str, content: str, is_atall: bool = False) -> dict:
+    """发送文本消息到企业微信群机器人。"""
+    import json
+    import urllib.request
+    import urllib.error
+
+    if not url or not url.strip():
+        return {"success": [], "error": ["企业微信 Webhook 未配置"]}
+
+    text_content = content
+    if is_atall:
+        text_content = "@all\n" + content
+
+    payload = {
+        "msgtype": "text",
+        "text": {
+            "content": text_content,
+            "mentioned_list": ["@all"] if is_atall else []
+        }
+    }
+
+    try:
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        request = urllib.request.Request(
+            url.strip(),
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+
+        with urllib.request.urlopen(request, timeout=10) as response:
+            result = json.loads(response.read().decode("utf-8"))
+
+        if result.get("errcode") == 0:
+            return {"success": [url], "error": []}
+
+        return {
+            "success": [],
+            "error": [f'errcode={result.get("errcode")}, '
+                      f'errmsg={result.get("errmsg")}']
+        }
+
+    except Exception as exc:
+        return {"success": [], "error": [str(exc)]}
+
+
+
 def dingtalk(url: str, content: str, number: str = None, is_atall: bool = False) -> Dict[str, Any]:
     success = []
     error = []
